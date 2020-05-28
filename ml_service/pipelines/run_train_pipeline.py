@@ -1,10 +1,7 @@
 from azureml.pipeline.core import PublishedPipeline
-from azureml.core import Workspace
-import os
-import sys
+from azureml.core import Experiment, Workspace
 import argparse
-sys.path.append(os.path.abspath("./ml_service/util"))  # NOQA: E402
-from env_variables import Env
+from ml_service.util.env_variables import Env
 
 
 def main():
@@ -58,10 +55,16 @@ def main():
 
         if(args.skip_train_execution is False):
             pipeline_parameters = {"model_name": e.model_name}
-            run = published_pipeline.submit(
-                aml_workspace,
-                e.experiment_name,
-                pipeline_parameters)
+            tags = {"BuildId": e.build_id}
+            if (e.build_uri is not None):
+                tags["BuildUri"] = e.build_uri
+            experiment = Experiment(
+                workspace=aml_workspace,
+                name=e.experiment_name)
+            run = experiment.submit(
+                published_pipeline,
+                tags=tags,
+                pipeline_parameters=pipeline_parameters)
 
             print("Pipeline run initiated ", run.id)
 
