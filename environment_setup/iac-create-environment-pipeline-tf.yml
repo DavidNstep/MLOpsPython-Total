@@ -62,7 +62,7 @@ steps:
 - task: charleszipp.azure-pipelines-tasks-terraform.azure-pipelines-tasks-terraform-cli.TerraformCLI@0
   displayName: 'TF apply - Deploy MLOps resources to Azure'
   inputs:
-    command: apply
+    command: destroy
     workingDirectory: '$(Build.SourcesDirectory)/environment_setup/tf-templates'
     environmentServiceName: $(AZURE_RM_SVC_CONNECTION)
   env:
